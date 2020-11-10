@@ -13,6 +13,22 @@ env:
     - CONFIG=release CFLAGS=-Werror
     - CONFIG=amalgamation CFLAGS=-Werror
     - CONFIG=release ANSI=1 CFLAGS=-Werror
+    
+    
+    - CONFIG=asan
+      arch: ppc64le
+    - CONFIG=msan
+      arch: ppc64le
+    - CONFIG=ubsan
+      arch: ppc64le
+    - CONFIG=debug
+      arch: ppc64le
+    - CONFIG=release CFLAGS=-Werror
+      arch: ppc64le
+    - CONFIG=amalgamation CFLAGS=-Werror
+      arch: ppc64le
+    - CONFIG=release ANSI=1 CFLAGS=-Werror
+      arch: ppc64le
 
 addons:
   apt:
@@ -43,6 +59,30 @@ matrix:
       after_success:
         - coveralls -b . --gcov $(pwd)/.deps/usr/bin/armeb-linux-gnueabihf-gcov --gcov-options '\-lp'
     - os: osx
+      env: CONFIG=release
+      compiler: gcc
+      
+      
+      
+    - os: linux
+      arch: ppc64le
+      compiler: gcc
+      env: CONFIG=release CFLAGS='-m32 -Werror' LDFLAGS=-m32
+      addons:
+        apt:
+          packages:
+            - gcc-multilib
+    - os: linux
+      arch: ppc64le
+      compiler: gcc
+      env:
+        - CONFIG=armeb CFLAGS='-DNDEBUG -g --coverage -Werror' LDFLAGS=--coverage
+      before_install:
+        - pip install --user cpp-coveralls 'requests[security]'
+      after_success:
+        - coveralls -b . --gcov $(pwd)/.deps/usr/bin/armeb-linux-gnueabihf-gcov --gcov-options '\-lp'
+    - os: osx
+      arch: ppc64le
       env: CONFIG=release
       compiler: gcc
 
